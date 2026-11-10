@@ -23,8 +23,8 @@ import streamlit as st
 # =====================================================================================
 # 2 CSV prediksi holdout (gabungan semua zona). Boleh diisi path FILE .csv, atau path FOLDER:
 # kalau folder, dipakai file "prediksi_holdout*.csv" di dalamnya (yang terbaru jika ada beberapa).
-SST_PATH  = r"HASIL CODE W DATA PREP LOG/FULL MODEL/sst"      # ARIMAX, SST
-CHLA_PATH = r"HASIL CODE W DATA PREP LOG/FULL MODEL/chl-a"    # XGBoost, Chl-a
+SST_PATH  = r"prediksi_holdout_2025_arimax_mingguan_FULL.csv"      # ARIMAX, SST
+CHLA_PATH = r"prediksi_holdout_2025_xgboost_mingguan_log_FULL.csv"    # XGBoost, Chl-a
 
 KKP_CSV = "Data KKP Hasil Tangkap Tahunan 2019-2024 - Copy.csv"
 
