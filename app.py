@@ -379,10 +379,25 @@ def main():
     wpp_ada = sorted(zona.wpp.unique())
     wpp_sel = st.selectbox("Wilayah", wpp_ada, format_func=lambda w: NAMA_WPP.get(w, f"WPP {w}"))
     tanggal = sorted(allp["tanggal_terbit"].dropna().unique(), reverse=True)
-    t_sel = st.selectbox("Minggu terbit prakiraan", tanggal, index=0,
-                         format_func=lambda d: f"Minggu s.d. {tgl(d)}")
-    h_sel = st.radio("Prakiraan untuk", list(range(1, HORIZON_MAKS + 1)), horizontal=True,
-                     format_func=lambda h: f"+{h} minggu")
+
+    # Horizon apa saja yang tersedia untuk tiap tanggal terbit. Di data holdout, minggu terbit paling
+    # baru biasanya cuma punya +1 minggu (target +2..+4 sudah lewat akhir data), jadi default
+    # dipilih minggu terbaru yang horizon +1..+4-nya LENGKAP.
+    cover = {pd.Timestamp(t): sorted(int(h) for h in g["horizon"].dropna().unique())
+             for t, g in allp.dropna(subset=["tanggal_terbit"]).groupby("tanggal_terbit")}
+    idx0 = next((i for i, d in enumerate(tanggal) if len(cover.get(pd.Timestamp(d), [])) >= HORIZON_MAKS), 0)
+
+    def _label_tanggal(d):
+        hs = cover.get(pd.Timestamp(d), [])
+        extra = "" if len(hs) >= HORIZON_MAKS else f" (hanya {', '.join(f'+{h}' for h in hs)} minggu)"
+        return f"Minggu s.d. {tgl(d)}{extra}"
+
+    t_sel = st.selectbox("Minggu terbit prakiraan", tanggal, index=idx0, format_func=_label_tanggal)
+    h_ada = cover.get(pd.Timestamp(t_sel), [])
+    if not h_ada:
+        st.warning("Belum ada prakiraan untuk minggu terbit ini.")
+        st.stop()
+    h_sel = st.radio("Prakiraan untuk", h_ada, horizontal=True, format_func=lambda h: f"+{h} minggu")
 
     sub = allp[(allp.tanggal_terbit == t_sel) & (allp.horizon == h_sel)].merge(zona, on="zona_id")
     sub = sub[sub.wpp == wpp_sel].reset_index(drop=True)
@@ -425,6 +440,16 @@ def main():
     with tab_c:
         tampil(buat_peta(sub, geo, "chla", zona_w, kkp, rng_sst))
         st.caption("Merah = klorofil-a tinggi (perairan subur) · Biru = rendah. Skala logaritmik.")
+
+    # ---- cek data ----
+    with st.expander("Cek data (jumlah baris per horizon)"):
+        cek = pd.DataFrame({"SST": data["sst"].groupby("horizon").size(),
+                            "Klorofil-a": data["chla"].groupby("horizon").size()})
+        cek = cek.reindex(range(1, HORIZON_MAKS + 1)).fillna(0).astype(int)
+        cek.index = [f"+{h} minggu" for h in cek.index]
+        st.dataframe(cek)
+        st.caption("Kalau +2 s.d. +4 minggu bernilai 0, file CSV memang belum memuat horizon itu "
+                   "(perlu diekspor ulang dari notebook model).")
 
     # ---- keterangan ----
     with st.expander("Tentang peta ini"):
