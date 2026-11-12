@@ -259,14 +259,14 @@ def susun_hover(r, kkp, fokus: str) -> str:
     baris = [f"<b>WPP {int(r.wpp)} · {koord_txt(r.lat, r.lon)}</b>"]
     if fokus == "potensi":
         baris.append(f"Potensi: <b>{KELAS_NAMA[int(r.kelas)]}</b>")
-    baris.append(f"SST {num(r.sst, 1)} °C · Chl-a {num(r.chl, 2)} mg/m³")
+    baris.append(f"SST {num(r.sst, 1)} °C · Klorofil-a {num(r.chl, 2)} mg/m³")
     if int(r.wpp) not in kkp:
         baris.append("<i>Data KKP belum dimuat</i>" if not kkp else "<i>Tidak ada data KKP untuk WPP ini</i>")
         return "<br>".join(baris)
     cocok = ikan_cocok(kkp, r.wpp, r.sst, r.chl)
     if cocok:
         baris.append("Ikan yang mungkin ada (tangkapan KKP):")
-        baris += [f"• {c['nama']} (SST {rng_txt(c['sst'])} °C; Chl-a {rng_txt(c['chl'], 2)})" for c in cocok]
+        baris += [f"• {c['nama']} (SST {rng_txt(c['sst'])} °C; Klorofil-a {rng_txt(c['chl'], 2)})" for c in cocok]
     elif not (np.isnan(r.sst) or np.isnan(r.chl)):
         baris.append("<i>Belum ada jenis ikan utama WPP ini yang cocok dengan kondisi ini</i>")
     baris.append("<i>Perkiraan, bukan pengamatan di titik ini</i>")
@@ -418,7 +418,7 @@ def main():
             with st.expander(f"Daftar zona potensi tinggi ({int((sub.kelas == 3).sum())} zona, 15 teratas)"):
                 st.dataframe(pd.DataFrame({
                     "Koordinat": [koord_txt(a, b) for a, b in zip(top.lat, top.lon)],
-                    "SST (°C)": top.sst.round(1), "Chl-a (mg/m³)": top.chl.round(2)}), hide_index=True)
+                    "SST (°C)": top.sst.round(1), "Klorofil-a (mg/m³)": top.chl.round(2)}), hide_index=True)
     with tab_s:
         tampil(buat_peta(sub, geo, "sst", zona_w, kkp, rng_sst))
         st.caption("Merah = hangat · Biru = dingin. Warna makin gelap = mendekati ujung skala.")
@@ -429,14 +429,14 @@ def main():
     # ---- keterangan ----
     with st.expander("Tentang peta ini"):
         st.markdown(
-            "**Cara klasifikasi potensi** (skor SST + skor Chl-a, dari ambang pada paper):\n\n"
-            f"- Optimum: SST {rng_txt(SST_OPTIMUM)} °C dan Chl-a {rng_txt(CHL_OPTIMUM, 1)} mg/m³ → skor 3\n"
-            f"- Toleransi: SST {rng_txt(SST_TOLERANSI)} °C dan Chl-a {rng_txt(CHL_TOLERANSI, 1)} mg/m³ → skor 2; di luar itu → 1\n"
+            "**Cara klasifikasi potensi** (skor SST + skor Klorofil-a, dari ambang pada paper):\n\n"
+            f"- Optimum: SST {rng_txt(SST_OPTIMUM)} °C dan Klorofil-a {rng_txt(CHL_OPTIMUM, 1)} mg/m³ → skor 3\n"
+            f"- Toleransi: SST {rng_txt(SST_TOLERANSI)} °C dan Klorofil-a {rng_txt(CHL_TOLERANSI, 1)} mg/m³ → skor 2; di luar itu → 1\n"
             "- Tinggi = kedua variabel optimum · Sedang = salah satu hanya toleransi · Rendah = selebihnya\n\n"
             "**Perkiraan jenis ikan**: jenis ikan dengan tangkapan terbesar di WPP tersebut (KKP 2019–2024) "
-            "yang kisaran SST/Chl-a optimumnya cocok dengan kondisi sel. Ini perkiraan, bukan jaminan ada ikan; "
-            "ikan dasar/karang dan krustasea tidak ditebak karena tidak ada kisaran SST/Chl-a dari rujukan.\n\n"
-            f"**Model**: SST = {model_dipakai['sst']}, Chl-a = {model_dipakai['chla']} (prediksi holdout 2025).")
+            "yang kisaran SST/Klorofil-a optimumnya cocok dengan kondisi sel. Ini perkiraan, bukan jaminan ada ikan; "
+            "ikan dasar/karang dan krustasea tidak ditebak karena tidak ada kisaran SST/Klorofil-a dari rujukan.\n\n"
+            f"**Model**: SST = {model_dipakai['sst']}, Klorofil-a = {model_dipakai['chla']} (prediksi holdout 2025).")
         st.markdown("**Rujukan**")
         for k, v in REFERENSI.items():
             st.markdown(f"- [{k}] {v}")
