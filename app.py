@@ -305,7 +305,7 @@ def buat_peta(df, geo, jenis, zona_w, kkp, rng_sst):
             z = np.log10(df["chl"].clip(lo, hi))
             zmin, zmax = math.log10(lo), math.log10(hi)
             ticks = [0.1, 0.3, 1, 3]
-            cb = dict(title=dict(text="Klorofil-a (mg/m³, skala log)", side="top"),
+            cb = dict(title=dict(text="Klorofil-a (mg/m³)", side="top"),
                       tickvals=[math.log10(t) for t in ticks], ticktext=[str(t).replace(".", ",") for t in ticks])
         # Turbo: biru gelap (dingin/rendah) -> cyan -> hijau -> kuning -> oranye -> merah gelap (panas/tinggi)
         tr = _CHORO(z=z, zmin=zmin, zmax=zmax, colorscale="Turbo", showscale=True,
@@ -439,7 +439,7 @@ def main():
         st.caption("Merah = hangat · Biru = dingin. Warna makin gelap = mendekati ujung skala.")
     with tab_c:
         tampil(buat_peta(sub, geo, "chla", zona_w, kkp, rng_sst))
-        st.caption("Merah = klorofil-a tinggi (perairan subur) · Biru = rendah. Skala logaritmik.")
+        st.caption("Merah = klorofil-a tinggi (perairan subur) · Biru = rendah.")
 
     # ---- cek data ----
     with st.expander("Cek data (jumlah baris per horizon)"):
