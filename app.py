@@ -343,7 +343,7 @@ footer {visibility: hidden;}
 
 
 def main():
-    st.set_page_config(page_title="Prakiraan Laut untuk Nelayan", page_icon="🎣",
+    st.set_page_config(page_title="Prakiraan Laut untuk Nelayan",
                        layout="centered", initial_sidebar_state="collapsed")
     st.markdown(CSS, unsafe_allow_html=True)
     st.title("Prakiraan Kondisi Laut")
