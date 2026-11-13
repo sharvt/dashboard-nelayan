@@ -346,8 +346,8 @@ def main():
     st.set_page_config(page_title="Prakiraan Laut untuk Nelayan", page_icon="🎣",
                        layout="centered", initial_sidebar_state="collapsed")
     st.markdown(CSS, unsafe_allow_html=True)
-    st.title("🎣 Prakiraan Kondisi Laut")
-    st.caption("Perkiraan potensi daerah tangkapan 1–4 minggu ke depan dari suhu laut (SST) dan klorofil-a.")
+    st.title("Prakiraan Kondisi Laut")
+    st.caption("Prakiraan potensi daerah tangkapan 1–4 minggu ke depan dari suhu laut (SST) dan klorofil-a.")
 
     # ---- data ----
     data, model_dipakai = {}, {}
@@ -421,7 +421,7 @@ def main():
     st.markdown(chips, unsafe_allow_html=True)
 
     # ---- peta ----
-    tab_p, tab_s, tab_c = st.tabs(["🎣 Potensi", "🌡️ Suhu laut", "🌿 Klorofil-a"])
+    tab_p, tab_s, tab_c = st.tabs(["Potensi", "Suhu laut", "Klorofil-a"])
     with tab_p:
         legenda = "".join(f'<span class="chip" style="background:{KELAS_WARNA[k]}">{KELAS_NAMA[k]}</span>'
                           for k in (3, 2, 1, 0))
